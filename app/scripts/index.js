@@ -1,11 +1,10 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var React = require('react');
-var ReactDOM = require('react-dom');
+require('./router.js');
+
+
 
 //WAITS FOR DOM TO BE READY
 $(function(){
-
-
-
+    Backbone.history.start();
 });
