@@ -6,21 +6,30 @@ require('backbone-react-component');
 var MessagesCollection = require('./../models/message.js').MessagesCollection;
 
 var MessageEntry = React.createClass({
-
-    handleMessage:function(event){
-      event.preventDefault();
-      alert('hello');
-    },
-    render: function(){
-      return(
-        <div className="bottom-container">
-            <form id="chat-form">
-                <input  onChange={this.handleMessage} className="form-control" type="text" name="" placeholder="enter message..." value=""/>
-                <button className="btn btn-success" type="submit" name="button">Submit Message</button>
-            </form>
-        </div>
-      )
+  getInitialState: function(){
+    return {
+      message: ''
     }
+  },
+  handleMessage:function(event){
+    event.preventDefault();
+    this.setState({message: event.target.value})
+  },
+  handleSubmit: function(e){
+    e.preventDefault();
+    this.props.addMessage(this.state.message);
+    this.setState({message: ''});
+  },
+  render: function(){
+    return(
+      <div className="bottom-container">
+          <form onSubmit={this.handleSubmit}id="chat-form">
+              <input  onChange={this.handleMessage} className="form-control" type="text" name="" placeholder="enter message..." value={this.state.message}/>
+              <button className="btn btn-success" type="submit" name="button">Submit Message</button>
+          </form>
+      </div>
+    )
+  }
 });
 
 var ChatContainer = React.createClass({
@@ -45,19 +54,25 @@ var ChatContainer = React.createClass({
       return <li key={message.get('_id')}>{message.get('content')}</li>
     });
   },
+  addMessage: function(message){
+    this.state.collection.create({
+      username: this.props.router.username,
+      content: message
+    })
+    this.setState({collection: this.state.collection})
+  },
+  render: function(){
+    var messages = this.getItems();
 
-    render: function(){
-      var messages = this.getItems();
-
-      return(
-        <div>
-            <MessageEntry />
-            <ul>{messages}</ul>
-        </div>
+    return(
+      <div>
+          <MessageEntry addMessage={this.addMessage} />
+          <ul>{messages}</ul>
+      </div>
 
 
-      )
-    }
+    )
+  }
 });
 
 module.exports = {
